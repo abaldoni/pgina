@@ -50,9 +50,11 @@ namespace pGina.Plugin.MySQLAuth
             string unameCol = Settings.Store.UsernameColumn;
             string hashMethodCol = Settings.Store.HashMethodColumn;
             string passwdCol = Settings.Store.PasswordColumn;
+            string pwdexpCol = Settings.Store.PasswordExpirationColumn;
 
-            string query = string.Format("SELECT {1}, {2}, {3} " +
-                "FROM {0} WHERE {1}=@user", tableName, unameCol, hashMethodCol, passwdCol);
+
+            string query = string.Format("SELECT {1}, {2}, {3}, {4} " +
+                "FROM {0} WHERE {1}=@user", tableName, unameCol, hashMethodCol, passwdCol, pwdexpCol);
             MySqlCommand cmd = new MySqlCommand(query, m_conn);
             cmd.Parameters.AddWithValue("@user", userName);
             MySqlDataReader rdr = cmd.ExecuteReader();
@@ -60,9 +62,10 @@ namespace pGina.Plugin.MySQLAuth
             {
                 rdr.Read();
                 PasswordHashAlgorithm hashAlg;
-                string uname = rdr[0].ToString();
-                string hash = rdr[2].ToString();
-                switch (rdr[1].ToString())
+                string uname = rdr.GetString(0);
+                string hash = rdr.GetString(2);
+                DateTime pwdexp = rdr.GetDateTime(3);
+                switch (rdr.GetString(1))
                 {
                     case "NONE":
                         hashAlg = PasswordHashAlgorithm.NONE;
@@ -98,12 +101,12 @@ namespace pGina.Plugin.MySQLAuth
                         hashAlg = PasswordHashAlgorithm.SSHA384;
                         break;
                     default:
-                        m_logger.ErrorFormat("Unrecognized hash algorithm: {0}", rdr[1].ToString());
+                        m_logger.ErrorFormat("Unrecognized hash algorithm: {0}", rdr.GetString(1));
                         return null;
                 }
                 rdr.Close();
 
-                return new UserEntry(uname, hashAlg, hash);
+                return new UserEntry(uname, hashAlg, hash, pwdexp);
             }
             return null;
         }

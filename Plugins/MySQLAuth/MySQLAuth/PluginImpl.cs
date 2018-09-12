@@ -80,6 +80,12 @@ namespace pGina.Plugin.MySQLAuth
                 bool passwordOk = entry.VerifyPassword(userInfo.Password);
                 if (passwordOk)
                 {
+                    if (entry.IsPasswordExpired())
+                    {
+                        userInfo.PasswordEXP = true;
+                        properties.AddTrackedSingle<UserInformation>(userInfo);
+                        return new BooleanResult { Message = "Password expired", Success = true };
+                    }
                     m_logger.DebugFormat("Authentication successful for {0}", userInfo.Username);
                     return new Shared.Types.BooleanResult() { Success = true, Message = "Success." };
                 }

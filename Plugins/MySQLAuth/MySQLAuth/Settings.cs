@@ -57,6 +57,7 @@ namespace pGina.Plugin.MySQLAuth
             m_settings.SetDefault("HashMethodColumn", "hash_method");
             m_settings.SetDefault("PasswordColumn", "password");
             m_settings.SetDefault("UserTablePrimaryKeyColumn", "user_id");
+            m_settings.SetDefault("PasswordExpirationColumn", "password_expiration");
 
             // Group table
             m_settings.SetDefault("GroupTableName", "groups");

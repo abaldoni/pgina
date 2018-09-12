@@ -47,16 +47,18 @@ namespace pGina.Plugin.MySQLAuth
         private PasswordHashAlgorithm m_hashAlg;
         private string m_name;
         private byte[] m_passBytes;
+        private DateTime m_passwdExp;
 
         public string Name { get { return m_name; } }
         public PasswordHashAlgorithm HashAlg { get { return m_hashAlg; } }
         private string HashedPassword { get { return m_hashedPass; } }
 
-        public UserEntry(string uname, PasswordHashAlgorithm alg, string hashedPass)
+        public UserEntry(string uname, PasswordHashAlgorithm alg, string hashedPass, DateTime passwdExp)
         {
             m_name = uname;
             m_hashAlg = alg;
             m_hashedPass = hashedPass;
+            m_passwdExp = passwdExp;
             if (m_hashAlg != PasswordHashAlgorithm.NONE)
                 m_passBytes = this.Decode(m_hashedPass);
             else
@@ -108,6 +110,13 @@ namespace pGina.Plugin.MySQLAuth
             {
                 return false;
             }
+        }
+
+        public bool IsPasswordExpired()
+        {
+            DateTime today = DateTime.Now;
+
+            return (today > m_passwdExp);
         }
 
         private bool VerifySaltedPassword(string plainText)

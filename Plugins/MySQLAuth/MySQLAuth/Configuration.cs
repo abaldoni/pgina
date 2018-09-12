@@ -65,6 +65,7 @@ namespace pGina.Plugin.MySQLAuth
             this.unameColTB.Text = Settings.Store.UsernameColumn;
             this.hashMethodColTB.Text = Settings.Store.HashMethodColumn;
             this.passwdColTB.Text = Settings.Store.PasswordColumn;
+            this.pwdexpColTB.Text = Settings.Store.PasswordExpirationColumn;
             this.userPrimaryKeyColTB.Text = Settings.Store.UserTablePrimaryKeyColumn;
 
             int encodingInt = Settings.Store.HashEncoding;
@@ -378,6 +379,7 @@ namespace pGina.Plugin.MySQLAuth
                         string unameCol = this.unameColTB.Text.Trim();
                         string hashMethodCol = this.hashMethodColTB.Text.Trim();
                         string passwdCol = this.passwdColTB.Text.Trim();
+                        string pwdexpCol = this.pwdexpColTB.Text.Trim();
 
                         // Is the primary key the same as the username?
                         bool pkIsUserName =
@@ -389,7 +391,8 @@ namespace pGina.Plugin.MySQLAuth
                             sql.AppendFormat(" {0} BIGINT auto_increment PRIMARY KEY, \r\n", pk);
                         sql.AppendFormat(" {0} VARCHAR(128) {1}, \r\n", unameCol, pkIsUserName ? "PRIMARY KEY" : "NOT NULL UNIQUE");
                         sql.AppendFormat(" {0} TEXT NOT NULL, \r\n", hashMethodCol);
-                        sql.AppendFormat(" {0} TEXT \r\n", passwdCol);
+                        sql.AppendFormat(" {0} TEXT, \r\n", passwdCol);
+                        sql.AppendFormat(" {0} TIMESTAMP \r\n", pwdexpCol);
                         sql.Append(")");  // End create table.
 
                         infoDlg.AppendLine("Executing SQL:");
@@ -652,5 +655,6 @@ namespace pGina.Plugin.MySQLAuth
         {
             System.Diagnostics.Process.Start("http://mutonufoai.github.io/pgina/documentation/plugins/mysql_auth.html");
         }
+
     }
 }
